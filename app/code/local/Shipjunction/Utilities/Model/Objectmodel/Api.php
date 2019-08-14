@@ -32,26 +32,26 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
 	    return $return;
     }
 	
-	/**
-	 * getClearpathOrderNumber
-	 *
-	 * @param string $_orderIncrementId
-	 * @return string clearpathOrderNumber, boolean false
-	 */
-	public function getClearpathOrderNumber( $_orderIncrementId )
+  	/**
+  	 * getClearpathOrderNumber
+  	 *
+  	 * @param string $_orderIncrementId
+  	 * @return string clearpathOrderNumber, boolean false
+  	 */
+  	public function getClearpathOrderNumber( $_orderIncrementId )
     {
-        Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: getClearpathOrderNumber called");
+      Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: getClearpathOrderNumber called");
 
-		$_clearpath_tablename = Mage::getStoreConfig('clearpath/general/clearpath_tablename');
-		$_db = Mage::getSingleton('core/resource')->getConnection('core_read');
-		$_db_query = "SELECT cp_order_number FROM {$_clearpath_tablename} WHERE mage_order_number = '{$_orderIncrementId}'";
-		$_db_result = $_db->fetchAll($_db_query);
-		
-		if ($_db_result) {
-			return $_db_result[0]['cp_order_number'];
-		} else {
-			return false;
-		}
+  		$_clearpath_tablename = Mage::getStoreConfig('clearpath/general/clearpath_tablename');
+  		$_db = Mage::getSingleton('core/resource')->getConnection('core_read');
+  		$_db_query = "SELECT cp_order_number FROM {$_clearpath_tablename} WHERE mage_order_number = '{$_orderIncrementId}'";
+  		$_db_result = $_db->fetchAll($_db_query);
+  		
+  		if ($_db_result) {
+  			return $_db_result[0]['cp_order_number'];
+  		} else {
+  			return false;
+  		}
     }
 
     /**
@@ -113,19 +113,20 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
         $readConnection = $resource->getConnection('core_read');
         // Map each bin_num to a zone
         $sql = "SELECT `bin_num`,`zone` FROM `bin_list` WHERE `bin_num` in (". rtrim($locationList, ',') .");";
+        /*Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: getEmbeddedErpZonesAndBins sql : ".$sql);*/
 
         $db_result = $readConnection->fetchAll($sql);
         if ($db_result) {
             foreach($db_result as $row){
                 if (strlen($row['bin_num']) > 0) {
-                    $binToZone[$row['bin_num']] = $row['zone'];
+                    $binToZone[strtoupper($row['bin_num'])] = $row['zone'];
                 }
             }
         }
         // put the results together
         foreach(array_keys($productToBin) as $productId) {
             $location = $productToBin[$productId];
-            $zone = $binToZone[$location];
+            $zone = $binToZone[strtoupper($location)];
             $result = $result."|".$productId."|".$location."|".$zone;
         }
         // remove starting pipe
@@ -154,8 +155,6 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
     {
         Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: createInvoice called with id:".$orderIncrementId.",email=".$email.",capture=".$capture.",itemsQty=".var_dump($itemsQty));
         $order = Mage::getModel('sales/order')->loadByIncrementId($orderIncrementId);
-        //$itemsQty = $this->_prepareItemQtyData($itemsQty);
-        /* @var $order Mage_Sales_Model_Order */
         /**
           * Check order existing
           */
@@ -163,6 +162,9 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
              return "Invalid order incrementId";
         }
 
+        if ($order->getBaseTotalDue() == 0) {
+             return "Invoiced";
+        }
         /**
          * Check invoice create availability
          */
@@ -202,6 +204,106 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
         }
 
         return $invoice->getIncrementId();
-    }    
+    }
+    /**
+     * Create new shipment for order
+     *
+     * @param string $orderIncrementId
+     * @param array $itemsQty
+     * @param string $carrierName
+     * @param string $title
+     * @param string $trackingNumbers
+     * @return string
+     */
+    public function createShipment($orderIncrementId,
+                                $itemsQty,
+                                $carrierName,
+                                $title,
+                                $trackingNumbers)
+    {
+      Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: createShipment called with id:".$orderIncrementId.",carrierName=".$carrierName.",title=".$title.",itemsQty=".var_dump($itemsQty));
+      $order = Mage::getModel('sales/order')->loadByIncrementId($orderIncrementId);
+
+      if (!$order->getId()) {
+           return "Invalid order incrementId";
+      }
+
+      $shipment = null;
+
+      if ($order->hasShipments()) {
+        $shipment = $order->getShipmentsCollection()->getFirstItem();
+        Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: has Shipments");
+      }
+      else {
+        /**
+         * Check shipment create availability
+         */
+        if (!$order->canShip()) {
+             return "Cannot do shipment for order.";
+        }
+
+        /* @var $shipment Mage_Sales_Model_Order_Shipment */
+        $shipment = $order->prepareShipment($itemsQty);
+        if ($shipment) {
+            $shipment->register();
+            //$shipment->addComment($comment, $email && $includeComment);
+            $shipment->getOrder()->setIsInProcess(true);
+            try {
+                $transactionSave = Mage::getModel('core/resource_transaction')
+                    ->addObject($shipment)
+                    ->addObject($shipment->getOrder())
+                    ->save();
+            } catch (Mage_Core_Exception $e) {
+                return $e->getMessage();
+            }
+        }
+      }
+
+      if (!$shipment) {
+        return "Unable to find or create a shipment.";
+      }
+
+      $trackingNumbersOnShipment = array();
+      foreach($shipment->getAllTracks() as $trackingNumberOnShipment) {
+        $trackingNumbersOnShipment[]=$trackingNumberOnShipment->getNumber();
+      }
+      $numbersToUpdate = array_diff($trackingNumbers, $trackingNumbersOnShipment);
+      foreach($numbersToUpdate as $trackingNumberToUpdate)
+      {
+        $trackId = Mage::getModel('sales/order_shipment_api')->addTrack($shipment->increment_id, $carrierName, $title, $trackingNumberToUpdate);
+      }
+
+      return $shipment->increment_id;
+    }
+    /**
+     * Create new invoice for order
+     *
+     * @param string $orderIncrementId
+     * @param array $itemsQty
+     * @param string $comment
+     * @param bool $email
+     * @param bool $includeComment
+     * @param bool $capture
+     * @param string $carrierName
+     * @param string $title
+     * @param string $trackingNumbers
+     * @return string
+     */
+    public function createInvoiceAndShipment($orderIncrementId, 
+                                $itemsQty, 
+                                $comment = null, 
+                                $email = false, 
+                                $includeComment = false, 
+                                $capture = false,
+                                $carrierName,
+                                $title,
+                                $trackingNumbers) {
+      $invoiceResult = $this->createInvoice($orderIncrementId, $itemsQty, $comment, $email, $includeComment, $capture);
+      if (is_numeric($invoiceResult) || $invoiceResult == "Invoiced") {
+        $shipmentResult = $this->createShipment($orderIncrementId, $itemsQty, $carrierName, $title, $trackingNumbers);
+        return $shipmentResult;
+      }
+      return $invoiceResult;
+    }
 }
 ?>

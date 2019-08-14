@@ -66,9 +66,35 @@
         <part name="email" type="xsd:string"></part>
         <part name="includeComment" type="xsd:string"></part>
         <part name="capture" type="xsd:string"></part>
-    </message>    
+    </message>
     <message name="shipjunctionUtilitiesCreateInvoiceResponse">
         <part name="invoiceIncrementId" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesCreateShipmentRequest">
+        <part name="sessionId" type="xsd:string"></part>
+        <part name="orderIncrementId" type="xsd:string"></part>
+        <part name="itemsQty" type="typens:orderItemIdQtyArray"></part>
+        <part name="carrierName" type="xsd:string"></part>
+        <part name="title" type="xsd:string"></part>
+        <part name="trackingNumbers" type="typens:ArrayOfString"></part>
+    </message>
+    <message name="shipjunctionUtilitiesCreateShipmentResponse">
+        <part name="shipmentIncrementId" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesCreateInvoiceAndShipmentRequest">
+        <part name="sessionId" type="xsd:string"></part>
+        <part name="orderIncrementId" type="xsd:string"></part>
+        <part name="itemsQty" type="typens:orderItemIdQtyArray"></part>
+        <part name="comment" type="xsd:string"></part>
+        <part name="email" type="xsd:string"></part>
+        <part name="includeComment" type="xsd:string"></part>
+        <part name="capture" type="xsd:string"></part>
+        <part name="carrierName" type="xsd:string"></part>
+        <part name="title" type="xsd:string"></part>
+        <part name="trackingNumbers" type="typens:ArrayOfString"></part>
+    </message>
+    <message name="shipjunctionUtilitiesCreateInvoiceAndShipmentResponse">
+        <part name="shipmentIncrementId" type="xsd:string"/>
     </message>    
     <portType name="{{var wsdl.handler}}PortType">
         <operation name="shipjunctionUtilitiesSendShipmentEmail">
@@ -95,6 +121,16 @@
             <documentation>Create new invoice for order</documentation>
             <input message="typens:shipjunctionUtilitiesCreateInvoiceRequest"></input>
             <output message="typens:shipjunctionUtilitiesCreateInvoiceResponse"></output>
+        </operation>
+        <operation name="shipjunctionUtilitiesCreateShipment">
+            <documentation>Create or update Shipment for order</documentation>
+            <input message="typens:shipjunctionUtilitiesCreateShipmentRequest"></input>
+            <output message="typens:shipjunctionUtilitiesCreateShipmentResponse"></output>
+        </operation>
+        <operation name="shipjunctionUtilitiesCreateInvoiceAndShipment">
+            <documentation>Create new Invoice and create new or update Shipment for order</documentation>
+            <input message="typens:shipjunctionUtilitiesCreateInvoiceAndShipmentRequest"></input>
+            <output message="typens:shipjunctionUtilitiesCreateInvoiceAndShipmentResponse"></output>
         </operation>
     </portType>
     <binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
@@ -136,6 +172,24 @@
             </output>
         </operation>
         <operation name="shipjunctionUtilitiesCreateInvoice">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </input>
+            <output>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </output>
+        </operation>
+        <operation name="shipjunctionUtilitiesCreateShipment">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </input>
+            <output>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </output>
+        </operation>
+        <operation name="shipjunctionUtilitiesCreateInvoiceAndShipment">
             <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
             <input>
                 <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>

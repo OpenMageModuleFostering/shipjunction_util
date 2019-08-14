@@ -26,6 +26,14 @@
                     <title>Create Invoice</title>
                     <method>createInvoice</method>
                 </createInvoice>
+                <createShipment translate="title" module="shipjunction_utilities">
+                    <title>Create Shipment</title>
+                    <method>createShipment</method>
+                </createShipment>
+                <createInvoiceAndShipment translate="title" module="shipjunction_utilities">
+                    <title>Create Invoice and Shipment</title>
+                    <method>createInvoiceAndShipment</method>
+                </createInvoiceAndShipment>
             </methods>
             </shipjunction_utilities>
         </resources>
