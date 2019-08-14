@@ -17,7 +17,7 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
     public function sendShipmentEmail( $shipmentIncrementId )
     {
         $return = 1;
-        Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: sendShipmentEmail called");
+        Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: sendShipmentEmail called on Shipment IncrementId $shipmentIncrementId");
         $shipment = Mage::getModel('sales/order_shipment')->loadByIncrementId($shipmentIncrementId);
         if($shipment)
         {
@@ -237,14 +237,14 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
       $order = Mage::getModel('sales/order')->loadByIncrementId($orderIncrementId);
 
       if (!$order->getId()) {
-           return "Invalid order incrementId";
+           return "Invalid order incrementId $orderIncrementId";
       }
 
       $shipment = null;
 
       if ($order->hasShipments()) {
         $shipment = $order->getShipmentsCollection()->getFirstItem();
-        Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: has Shipments");
+        Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: $orderIncrementId has Shipments");
       }
       else {
         /**
@@ -270,7 +270,7 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
                 } catch (Exception $e) {
                     $errmsg = $e->getMessage();
                     if ($retries < 10 and strpos($errmsg, "try restarting transaction") > -1) {
-		    	Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: retrying due to error $errmsg");
+		    	              Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: retrying due to error $errmsg");
                         $shouldRetry = true;
                     } else {
                         return $errmsg;    
@@ -280,9 +280,13 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
                 }
             } while ($shouldRetry);
         }
+        else {
+          Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: shipment not valid $orderIncrementId");
+        }
       }
 
       if (!$shipment) {
+        Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: shipment not valid $orderIncrementId");
         return "Unable to find or create a shipment.";
       }
 
