@@ -193,15 +193,27 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
 
         $invoice->getOrder()->setIsInProcess(true);
 
-        try {
-            Mage::getModel('core/resource_transaction')
-                ->addObject($invoice)
-                ->addObject($invoice->getOrder())
-                ->save();
-            $invoice->sendEmail($email, ($includeComment ? $comment : ''));
-        } catch (Mage_Core_Exception $e) {
-            return "Data invalid : ".$e->getMessage();
-        }
+        $retries = 0;
+        do {
+            $shouldRetry = false;
+            try {
+                Mage::getModel('core/resource_transaction')
+                    ->addObject($invoice)
+                    ->addObject($invoice->getOrder())
+                    ->save();
+                $invoice->sendEmail($email, ($includeComment ? $comment : ''));
+            } catch (Exception $e) {
+                $errmsg = $e->getMessage();
+                if ($retries < 10 and strpos($errmsg, "try restarting transaction") > -1) {
+		    Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: retrying due to error $errmsg");
+                    $shouldRetry = true;
+                } else {
+                    return $errmsg;    
+                }
+                $retries++;
+                usleep(50000 * $retries); // wait
+            }
+        } while ($shouldRetry);
 
         return $invoice->getIncrementId();
     }
@@ -242,20 +254,31 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
              return "Cannot do shipment for order.";
         }
 
-        /* @var $shipment Mage_Sales_Model_Order_Shipment */
-        $shipment = $order->prepareShipment();  // removing $itemsQty for now
+        $shipment = $order->prepareShipment();
         if ($shipment) {
             $shipment->register();
             //$shipment->addComment($comment, $email && $includeComment);
             $shipment->getOrder()->setIsInProcess(true);
-            try {
-                $transactionSave = Mage::getModel('core/resource_transaction')
-                    ->addObject($shipment)
-                    ->addObject($shipment->getOrder())
-                    ->save();
-            } catch (Mage_Core_Exception $e) {
-                return $e->getMessage();
-            }
+            $retries = 0;
+            do {
+                $shouldRetry = false;
+                try {
+                    $transactionSave = Mage::getModel('core/resource_transaction')
+                        ->addObject($shipment)
+                        ->addObject($shipment->getOrder())
+                        ->save();
+                } catch (Exception $e) {
+                    $errmsg = $e->getMessage();
+                    if ($retries < 10 and strpos($errmsg, "try restarting transaction") > -1) {
+		    	Mage::log("Shipjunction_Utilites_Model_Objectmodel_Api: retrying due to error $errmsg");
+                        $shouldRetry = true;
+                    } else {
+                        return $errmsg;    
+                    }
+                    $retries++;
+                    usleep(50000 * $retries); // wait
+                }
+            } while ($shouldRetry);
         }
       }
 
@@ -272,6 +295,8 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
       {
         $trackId = Mage::getModel('sales/order_shipment_api')->addTrack($shipment->increment_id, $carrierName, $title, $trackingNumberToUpdate);
       }
+
+      $order->save();
 
       return $shipment->increment_id;
     }
