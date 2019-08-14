@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="{{var wsdl.name}}" targetNamespace="urn:{{var wsdl.name}}" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:typens="urn:{{var wsdl.name}}" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <types>
+        <schema targetNamespace="urn:{{var wsdl.name}}" xmlns:typens="urn:{{var wsdl.name}}">
+            <import namespace="http://schemas.xmlsoap.org/soap/encoding/" schemaLocation="http://schemas.xmlsoap.org/soap/encoding/"/>
+            <complexType name="productLocationZone">
+                <all>
+                    <element name="productId" type="xsd:string"/>
+                    <element name="location" type="xsd:string"/>
+                    <element name="zone" type="xsd:string"/>
+                </all>
+            </complexType>
+            <complexType name="productLocationZoneArray">
+                <complexContent>
+                    <restriction base="soapenc:Array">
+                        <attribute ref="soapenc:arrayType" wsdl:arrayType="typens:productLocationZone[]"/>
+                    </restriction>
+                </complexContent>
+            </complexType>
+            <complexType name="Map">
+                <sequence>
+                    <element name="item" maxOccurs="unbounded" minOccurs="0">
+                        <complexType>
+                            <sequence>
+                              <element name="key" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+                              <element name="value" type="xsd:string" maxOccurs="1" minOccurs="1"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="shipjunctionUtilitiesSendShipmentEmailRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="shipmentIncrementId" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesSendShipmentEmailResponse">
+        <part name="result" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesGetClearpathOrderNumberRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="_orderIncrementId" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesGetClearpathOrderNumberResponse">
+        <part name="_cpOrderNumber" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesGetEmbeddedErpFullStockOrdersRequest">
+        <part name="sessionId" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesGetEmbeddedErpFullStockOrdersResponse">
+        <part name="incrementIdList" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesGetEmbeddedErpZonesAndBinsRequest">
+        <part name="sessionId" type="xsd:string"/>
+        <part name="_productIdList" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesGetEmbeddedErpZonesAndBinsResponse">
+        <part name="zonesBins" type="xsd:string"/>
+    </message>
+    <message name="shipjunctionUtilitiesCreateInvoiceRequest">
+        <part name="sessionId" type="xsd:string"></part>
+        <part name="orderIncrementId" type="xsd:string"></part>
+        <part name="itemsQty" type="typens:orderItemIdQtyArray"></part>
+        <part name="comment" type="xsd:string"></part>
+        <part name="email" type="xsd:string"></part>
+        <part name="includeComment" type="xsd:string"></part>
+        <part name="capture" type="xsd:string"></part>
+    </message>    
+    <message name="shipjunctionUtilitiesCreateInvoiceResponse">
+        <part name="invoiceIncrementId" type="xsd:string"/>
+    </message>    
+    <portType name="{{var wsdl.handler}}PortType">
+        <operation name="shipjunctionUtilitiesSendShipmentEmail">
+            <documentation>Send a shipment email by shipment incrementId</documentation>
+            <input message="typens:shipjunctionUtilitiesSendShipmentEmailRequest"/>
+            <output message="typens:shipjunctionUtilitiesSendShipmentEmailResponse"/>
+        </operation>
+        <operation name="shipjunctionUtilitiesGetClearpathOrderNumber">
+            <documentation>Get a ClearPath order number by Magento order number</documentation>
+            <input message="typens:shipjunctionUtilitiesGetClearpathOrderNumberRequest"/>
+            <output message="typens:shipjunctionUtilitiesGetClearpathOrderNumberResponse"/>
+        </operation>
+        <operation name="shipjunctionUtilitiesGetEmbeddedErpFullStockOrders">
+            <documentation>Get list of Embedded Erp fully stocked orders</documentation>
+            <input message="typens:shipjunctionUtilitiesGetEmbeddedErpFullStockOrdersRequest"/>
+            <output message="typens:shipjunctionUtilitiesGetEmbeddedErpFullStockOrdersResponse"/>
+        </operation>
+        <operation name="shipjunctionUtilitiesGetEmbeddedErpZonesAndBins">
+            <documentation>Get Embedded Erp zones and bins for list of products</documentation>
+            <input message="typens:shipjunctionUtilitiesGetEmbeddedErpZonesAndBinsRequest"/>
+            <output message="typens:shipjunctionUtilitiesGetEmbeddedErpZonesAndBinsResponse"/>
+        </operation>
+        <operation name="shipjunctionUtilitiesCreateInvoice">
+            <documentation>Create new invoice for order</documentation>
+            <input message="typens:shipjunctionUtilitiesCreateInvoiceRequest"></input>
+            <output message="typens:shipjunctionUtilitiesCreateInvoiceResponse"></output>
+        </operation>
+    </portType>
+    <binding name="{{var wsdl.handler}}Binding" type="typens:{{var wsdl.handler}}PortType">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="shipjunctionUtilitiesSendShipmentEmail">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </input>
+            <output>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </output>
+        </operation>
+        <operation name="shipjunctionUtilitiesGetClearpathOrderNumber">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </input>
+            <output>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </output>
+        </operation>
+        <operation name="shipjunctionUtilitiesGetEmbeddedErpFullStockOrders">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </input>
+            <output>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </output>
+        </operation>
+        <operation name="shipjunctionUtilitiesGetEmbeddedErpZonesAndBins">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </input>
+            <output>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </output>
+        </operation>
+        <operation name="shipjunctionUtilitiesCreateInvoice">
+            <soap:operation soapAction="urn:{{var wsdl.handler}}Action"/>
+            <input>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </input>
+            <output>
+                <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:{{var wsdl.name}}" use="encoded"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="{{var wsdl.name}}Service">
+        <port binding="typens:{{var wsdl.handler}}Binding" name="{{var wsdl.handler}}Port">
+            <soap:address location="{{var wsdl.url}}"/>
+        </port>
+    </service>
+</definitions>

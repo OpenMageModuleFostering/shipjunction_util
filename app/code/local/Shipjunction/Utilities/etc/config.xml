@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <modules>
+        <Shipjunction_Utilities>
+            <version>0.1.0</version>
+        </Shipjunction_Utilities>
+    </modules>
+    <global>
+        <models>
+            <shipjunction_utilities>
+<!--            <modulename>-->
+                <class>Shipjunction_Utilities_Model</class>
+            </shipjunction_utilities>
+<!--            </modulename>-->
+        </models>
+    </global>
+	<default>
+		<clearpath>
+			<general>
+				<clearpath_tablename>clearpath_ordernumber</clearpath_tablename>
+			</general>
+		</clearpath>
+	</default>
+</config>

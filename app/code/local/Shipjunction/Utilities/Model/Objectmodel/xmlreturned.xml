@@ -1,0 +1,295 @@
+difficulties with returning a new object from Magento Api :
+
+*. got the object defined in wsdl
+*. have the object being returned as below, but the object itself is called of type "Struct", which I believe to be the default when the magento SOAP serializer gets an object with which it is unfamiliar.
+
+so the question is, how do I get the SOAP serializer within Magento to return the below without Struct, and with "ProductLocationZone"
+
+
+<!-- this is the result with the object, but it doesn't know anyhting about my class because it's defined in my api file, and the object->wsdl mapping is happening somewhere else -->
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="urn:Magento" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SOAP-ENV:Body>
+		<ns1:shipjunctionUtilitiesGetEmbeddedErpZonesAndBinsResponse>
+			<zonesBins SOAP-ENC:arrayType="SOAP-ENC:Struct[2]" xsi:type="SOAP-ENC:Array">
+				<item xsi:type="SOAP-ENC:Struct">
+					<productId xsi:type="xsd:string">SKU1</productId>
+					<location xsi:type="xsd:string">SKU1LOC</location>
+					<zone xsi:type="xsd:string">SKU1ZONE</zone>
+				</item>
+				<item xsi:type="SOAP-ENC:Struct">
+					<productId xsi:type="xsd:string">SKU2</productId>
+					<location xsi:type="xsd:string">SKU2LOC</location>
+					<zone xsi:type="xsd:string">SKU2ZONE</zone>
+				</item>
+			</zonesBins>
+		</ns1:shipjunctionUtilitiesGetEmbeddedErpZonesAndBinsResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+<complexType name="associativeEntity">
+<all>
+<element name="key" type="xsd:string"/>
+<element name="value" type="xsd:string"/>
+</all>
+</complexType>
+<complexType name="associativeArray">
+<complexContent>
+<restriction base="soapenc:Array">
+<attribute ref="soapenc:arrayType" wsdl:arrayType="typens:associativeEntity[]"/>
+</restriction>
+</complexContent>
+</complexType>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="urn:Magento" xmlns:ns2="http://xml.apache.org/xml-soap" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SOAP-ENV:Body>
+		<ns1:shipjunctionUtilitiesGetEmbeddedErpZonesAndBinsResponse>
+			<zonesBins SOAP-ENC:arrayType="ns2:Map[2]" xsi:type="SOAP-ENC:Array">
+				<item xsi:type="ns2:Map">
+					<item>
+						<key xsi:type="xsd:string">productId</key>
+						<value xsi:type="xsd:string">SKU1</value>
+					</item>
+					<item>
+						<key xsi:type="xsd:string">location</key>
+						<value xsi:nil="true"/>
+					</item>
+					<item>
+						<key xsi:type="xsd:string">zone</key>
+						<value xsi:type="xsd:string">SKU1ZONE</value>
+					</item>
+				</item>
+				<item xsi:type="ns2:Map">
+					<item>
+						<key xsi:type="xsd:string">productId</key>
+						<value xsi:type="xsd:string">SKU2</value>
+					</item>
+					<item>
+						<key xsi:type="xsd:string">location</key>
+						<value xsi:nil="true"/>
+					</item>
+					<item>
+						<key xsi:type="xsd:string">zone</key>
+						<value xsi:type="xsd:string">SKU2ZONE</value>
+					</item>
+				</item>
+			</zonesBins>
+		</ns1:shipjunctionUtilitiesGetEmbeddedErpZonesAndBinsResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="urn:Magento" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SOAP-ENV:Body>
+		<ns1:salesOrderInfoResponse>
+			<result xsi:type="ns1:salesOrderEntity">
+				<increment_id xsi:type="xsd:string">100000003</increment_id>
+				<store_id xsi:type="xsd:string">1</store_id>
+				<created_at xsi:type="xsd:string">2013-06-27 16:01:40</created_at>
+				<updated_at xsi:type="xsd:string">2013-07-17 20:06:49</updated_at>
+				<customer_id xsi:type="xsd:string">3</customer_id>
+				<tax_amount xsi:type="xsd:string">1.2400</tax_amount>
+				<shipping_amount xsi:type="xsd:string">5.0000</shipping_amount>
+				<discount_amount xsi:type="xsd:string">0.0000</discount_amount>
+				<subtotal xsi:type="xsd:string">15.0000</subtotal>
+				<grand_total xsi:type="xsd:string">21.2400</grand_total>
+				<total_qty_ordered xsi:type="xsd:string">1.0000</total_qty_ordered>
+				<base_tax_amount xsi:type="xsd:string">1.2400</base_tax_amount>
+				<base_shipping_amount xsi:type="xsd:string">5.0000</base_shipping_amount>
+				<base_discount_amount xsi:type="xsd:string">0.0000</base_discount_amount>
+				<base_subtotal xsi:type="xsd:string">15.0000</base_subtotal>
+				<base_grand_total xsi:type="xsd:string">21.2400</base_grand_total>
+				<billing_address_id xsi:type="xsd:string">5</billing_address_id>
+				<shipping_address_id xsi:type="xsd:string">6</shipping_address_id>
+				<store_to_base_rate xsi:type="xsd:string">1.0000</store_to_base_rate>
+				<store_to_order_rate xsi:type="xsd:string">1.0000</store_to_order_rate>
+				<base_to_global_rate xsi:type="xsd:string">1.0000</base_to_global_rate>
+				<base_to_order_rate xsi:type="xsd:string">1.0000</base_to_order_rate>
+				<weight xsi:type="xsd:string">0.5000</weight>
+				<store_name xsi:type="xsd:string">Main Website
+Main Store
+English</store_name>
+				<remote_ip xsi:type="xsd:string">192.168.1.130</remote_ip>
+				<status xsi:type="xsd:string">processing</status>
+				<state xsi:type="xsd:string">processing</state>
+				<global_currency_code xsi:type="xsd:string">USD</global_currency_code>
+				<base_currency_code xsi:type="xsd:string">USD</base_currency_code>
+				<store_currency_code xsi:type="xsd:string">USD</store_currency_code>
+				<order_currency_code xsi:type="xsd:string">USD</order_currency_code>
+				<shipping_method xsi:type="xsd:string">flatrate_flatrate</shipping_method>
+				<shipping_description xsi:type="xsd:string">Flat Rate - Fixed</shipping_description>
+				<customer_email xsi:type="xsd:string">jcarr@shipjunction.com</customer_email>
+				<customer_firstname xsi:type="xsd:string">Joe</customer_firstname>
+				<customer_lastname xsi:type="xsd:string">Carr</customer_lastname>
+				<quote_id xsi:type="xsd:string">3</quote_id>
+				<is_virtual xsi:type="xsd:string">0</is_virtual>
+				<customer_group_id xsi:type="xsd:string">1</customer_group_id>
+				<customer_note_notify xsi:type="xsd:string">1</customer_note_notify>
+				<customer_is_guest xsi:type="xsd:string">0</customer_is_guest>
+				<email_sent xsi:type="xsd:string">1</email_sent>
+				<order_id xsi:type="xsd:string">3</order_id>
+				<shipping_address xsi:type="ns1:salesOrderAddressEntity">
+					<parent_id xsi:type="xsd:string">3</parent_id>
+					<address_type xsi:type="xsd:string">shipping</address_type>
+					<firstname xsi:type="xsd:string">Joe</firstname>
+					<lastname xsi:type="xsd:string">Carr</lastname>
+					<street xsi:type="xsd:string">4116 Emerald St</street>
+					<city xsi:type="xsd:string">San Francisco</city>
+					<region xsi:type="xsd:string">California</region>
+					<postcode xsi:type="xsd:string">94509</postcode>
+					<country_id xsi:type="xsd:string">US</country_id>
+					<telephone xsi:type="xsd:string">718-223-1923</telephone>
+					<region_id xsi:type="xsd:string">12</region_id>
+					<address_id xsi:type="xsd:string">6</address_id>
+				</shipping_address>
+				<billing_address xsi:type="ns1:salesOrderAddressEntity">
+					<parent_id xsi:type="xsd:string">3</parent_id>
+					<address_type xsi:type="xsd:string">billing</address_type>
+					<firstname xsi:type="xsd:string">Joe</firstname>
+					<lastname xsi:type="xsd:string">Carr</lastname>
+					<street xsi:type="xsd:string">4116 Emerald St</street>
+					<city xsi:type="xsd:string">San Francisco</city>
+					<region xsi:type="xsd:string">California</region>
+					<postcode xsi:type="xsd:string">94509</postcode>
+					<country_id xsi:type="xsd:string">US</country_id>
+					<telephone xsi:type="xsd:string">718-223-1923</telephone>
+					<region_id xsi:type="xsd:string">12</region_id>
+					<address_id xsi:type="xsd:string">5</address_id>
+				</billing_address>
+				<items SOAP-ENC:arrayType="ns1:salesOrderItemEntity[2]" xsi:type="ns1:salesOrderItemEntityArray">
+					<item xsi:type="ns1:salesOrderItemEntity">
+						<item_id xsi:type="xsd:string">4</item_id>
+						<order_id xsi:type="xsd:string">3</order_id>
+						<quote_item_id xsi:type="xsd:string">4</quote_item_id>
+						<created_at xsi:type="xsd:string">2013-06-27 16:01:40</created_at>
+						<updated_at xsi:type="xsd:string">2013-07-17 20:06:49</updated_at>
+						<product_id xsi:type="xsd:string">119</product_id>
+						<product_type xsi:type="xsd:string">configurable</product_type>
+						<product_options xsi:type="xsd:string">a:6:{s:15:&quot;info_buyRequest&quot;;a:5:{s:4:&quot;uenc&quot;;s:104:&quot;aHR0cDovLzE5Mi4xNjguMS4xNDAvaW5kZXgucGhwL2NvYWxlc2NlLWZ1bmN0aW9uaW5nLW9uLWltcGF0aWVuY2UtdC1zaGlydC5odG1s&quot;;s:7:&quot;product&quot;;s:3:&quot;119&quot;;s:15:&quot;related_product&quot;;s:0:&quot;&quot;;s:15:&quot;super_attribute&quot;;a:1:{i:525;s:2:&quot;99&quot;;}s:3:&quot;qty&quot;;s:1:&quot;1&quot;;}s:15:&quot;attributes_info&quot;;a:1:{i:0;a:2:{s:5:&quot;label&quot;;s:4:&quot;Size&quot;;s:5:&quot;value&quot;;s:6:&quot;Medium&quot;;}}s:11:&quot;simple_name&quot;;s:43:&quot;Coalesce: Functioning On Impatience T-Shirt&quot;;s:10:&quot;simple_sku&quot;;s:7:&quot;coal_md&quot;;s:20:&quot;product_calculations&quot;;i:1;s:13:&quot;shipment_type&quot;;i:0;}</product_options>
+						<weight xsi:type="xsd:string">0.5000</weight>
+						<is_virtual xsi:type="xsd:string">0</is_virtual>
+						<sku xsi:type="xsd:string">coal_md</sku>
+						<name xsi:type="xsd:string">Coalesce: Functioning On Impatience T-Shirt</name>
+						<free_shipping xsi:type="xsd:string">0</free_shipping>
+						<is_qty_decimal xsi:type="xsd:string">0</is_qty_decimal>
+						<no_discount xsi:type="xsd:string">0</no_discount>
+						<qty_canceled xsi:type="xsd:string">0.0000</qty_canceled>
+						<qty_invoiced xsi:type="xsd:string">0.0000</qty_invoiced>
+						<qty_ordered xsi:type="xsd:string">1.0000</qty_ordered>
+						<qty_refunded xsi:type="xsd:string">0.0000</qty_refunded>
+						<qty_shipped xsi:type="xsd:string">1.0000</qty_shipped>
+						<price xsi:type="xsd:string">15.0000</price>
+						<base_price xsi:type="xsd:string">15.0000</base_price>
+						<original_price xsi:type="xsd:string">15.0000</original_price>
+						<base_original_price xsi:type="xsd:string">15.0000</base_original_price>
+						<tax_percent xsi:type="xsd:string">8.2500</tax_percent>
+						<tax_amount xsi:type="xsd:string">1.2400</tax_amount>
+						<base_tax_amount xsi:type="xsd:string">1.2400</base_tax_amount>
+						<tax_invoiced xsi:type="xsd:string">0.0000</tax_invoiced>
+						<base_tax_invoiced xsi:type="xsd:string">0.0000</base_tax_invoiced>
+						<discount_percent xsi:type="xsd:string">0.0000</discount_percent>
+						<discount_amount xsi:type="xsd:string">0.0000</discount_amount>
+						<base_discount_amount xsi:type="xsd:string">0.0000</base_discount_amount>
+						<discount_invoiced xsi:type="xsd:string">0.0000</discount_invoiced>
+						<base_discount_invoiced xsi:type="xsd:string">0.0000</base_discount_invoiced>
+						<amount_refunded xsi:type="xsd:string">0.0000</amount_refunded>
+						<base_amount_refunded xsi:type="xsd:string">0.0000</base_amount_refunded>
+						<row_total xsi:type="xsd:string">15.0000</row_total>
+						<base_row_total xsi:type="xsd:string">15.0000</base_row_total>
+						<row_invoiced xsi:type="xsd:string">0.0000</row_invoiced>
+						<base_row_invoiced xsi:type="xsd:string">0.0000</base_row_invoiced>
+						<row_weight xsi:type="xsd:string">0.5000</row_weight>
+						<weee_tax_applied xsi:type="xsd:string">a:0:{}</weee_tax_applied>
+						<weee_tax_applied_amount xsi:type="xsd:string">0.0000</weee_tax_applied_amount>
+						<weee_tax_applied_row_amount xsi:type="xsd:string">0.0000</weee_tax_applied_row_amount>
+						<base_weee_tax_applied_amount xsi:type="xsd:string">0.0000</base_weee_tax_applied_amount>
+						<base_weee_tax_applied_row_amount xsi:type="xsd:string">0.0000</base_weee_tax_applied_row_amount>
+						<weee_tax_disposition xsi:type="xsd:string">0.0000</weee_tax_disposition>
+						<weee_tax_row_disposition xsi:type="xsd:string">0.0000</weee_tax_row_disposition>
+						<base_weee_tax_disposition xsi:type="xsd:string">0.0000</base_weee_tax_disposition>
+						<base_weee_tax_row_disposition xsi:type="xsd:string">0.0000</base_weee_tax_row_disposition>
+					</item>
+					<item xsi:type="ns1:salesOrderItemEntity">
+						<item_id xsi:type="xsd:string">5</item_id>
+						<order_id xsi:type="xsd:string">3</order_id>
+						<quote_item_id xsi:type="xsd:string">5</quote_item_id>
+						<created_at xsi:type="xsd:string">2013-06-27 16:01:40</created_at>
+						<updated_at xsi:type="xsd:string">2013-07-17 20:06:49</updated_at>
+						<product_id xsi:type="xsd:string">117</product_id>
+						<product_type xsi:type="xsd:string">simple</product_type>
+						<product_options xsi:type="xsd:string">a:1:{s:15:&quot;info_buyRequest&quot;;a:5:{s:4:&quot;uenc&quot;;s:104:&quot;aHR0cDovLzE5Mi4xNjguMS4xNDAvaW5kZXgucGhwL2NvYWxlc2NlLWZ1bmN0aW9uaW5nLW9uLWltcGF0aWVuY2UtdC1zaGlydC5odG1s&quot;;s:7:&quot;product&quot;;s:3:&quot;119&quot;;s:15:&quot;related_product&quot;;s:0:&quot;&quot;;s:15:&quot;super_attribute&quot;;a:1:{i:525;s:2:&quot;99&quot;;}s:3:&quot;qty&quot;;s:1:&quot;1&quot;;}}</product_options>
+						<weight xsi:type="xsd:string">0.5000</weight>
+						<is_virtual xsi:type="xsd:string">0</is_virtual>
+						<sku xsi:type="xsd:string">coal_md</sku>
+						<name xsi:type="xsd:string">Coalesce: Functioning On Impatience T-Shirt</name>
+						<free_shipping xsi:type="xsd:string">0</free_shipping>
+						<is_qty_decimal xsi:type="xsd:string">0</is_qty_decimal>
+						<no_discount xsi:type="xsd:string">0</no_discount>
+						<qty_canceled xsi:type="xsd:string">0.0000</qty_canceled>
+						<qty_invoiced xsi:type="xsd:string">0.0000</qty_invoiced>
+						<qty_ordered xsi:type="xsd:string">1.0000</qty_ordered>
+						<qty_refunded xsi:type="xsd:string">0.0000</qty_refunded>
+						<qty_shipped xsi:type="xsd:string">0.0000</qty_shipped>
+						<price xsi:type="xsd:string">0.0000</price>
+						<base_price xsi:type="xsd:string">0.0000</base_price>
+						<original_price xsi:type="xsd:string">0.0000</original_price>
+						<tax_percent xsi:type="xsd:string">0.0000</tax_percent>
+						<tax_amount xsi:type="xsd:string">0.0000</tax_amount>
+						<base_tax_amount xsi:type="xsd:string">0.0000</base_tax_amount>
+						<tax_invoiced xsi:type="xsd:string">0.0000</tax_invoiced>
+						<base_tax_invoiced xsi:type="xsd:string">0.0000</base_tax_invoiced>
+						<discount_percent xsi:type="xsd:string">0.0000</discount_percent>
+						<discount_amount xsi:type="xsd:string">0.0000</discount_amount>
+						<base_discount_amount xsi:type="xsd:string">0.0000</base_discount_amount>
+						<discount_invoiced xsi:type="xsd:string">0.0000</discount_invoiced>
+						<base_discount_invoiced xsi:type="xsd:string">0.0000</base_discount_invoiced>
+						<amount_refunded xsi:type="xsd:string">0.0000</amount_refunded>
+						<base_amount_refunded xsi:type="xsd:string">0.0000</base_amount_refunded>
+						<row_total xsi:type="xsd:string">0.0000</row_total>
+						<base_row_total xsi:type="xsd:string">0.0000</base_row_total>
+						<row_invoiced xsi:type="xsd:string">0.0000</row_invoiced>
+						<base_row_invoiced xsi:type="xsd:string">0.0000</base_row_invoiced>
+						<row_weight xsi:type="xsd:string">0.0000</row_weight>
+						<weee_tax_applied xsi:type="xsd:string">a:0:{}</weee_tax_applied>
+						<weee_tax_applied_amount xsi:type="xsd:string">0.0000</weee_tax_applied_amount>
+						<weee_tax_applied_row_amount xsi:type="xsd:string">0.0000</weee_tax_applied_row_amount>
+						<base_weee_tax_applied_amount xsi:type="xsd:string">0.0000</base_weee_tax_applied_amount>
+						<weee_tax_disposition xsi:type="xsd:string">0.0000</weee_tax_disposition>
+						<weee_tax_row_disposition xsi:type="xsd:string">0.0000</weee_tax_row_disposition>
+						<base_weee_tax_disposition xsi:type="xsd:string">0.0000</base_weee_tax_disposition>
+						<base_weee_tax_row_disposition xsi:type="xsd:string">0.0000</base_weee_tax_row_disposition>
+					</item>
+				</items>
+				<payment xsi:type="ns1:salesOrderPaymentEntity">
+					<parent_id xsi:type="xsd:string">3</parent_id>
+					<amount_ordered xsi:type="xsd:string">21.2400</amount_ordered>
+					<shipping_amount xsi:type="xsd:string">5.0000</shipping_amount>
+					<base_amount_ordered xsi:type="xsd:string">21.2400</base_amount_ordered>
+					<base_shipping_amount xsi:type="xsd:string">5.0000</base_shipping_amount>
+					<method xsi:type="xsd:string">checkmo</method>
+					<cc_exp_month xsi:type="xsd:string">0</cc_exp_month>
+					<cc_exp_year xsi:type="xsd:string">0</cc_exp_year>
+					<cc_ss_start_month xsi:type="xsd:string">0</cc_ss_start_month>
+					<cc_ss_start_year xsi:type="xsd:string">0</cc_ss_start_year>
+					<payment_id xsi:type="xsd:string">3</payment_id>
+				</payment>
+				<status_history SOAP-ENC:arrayType="ns1:salesOrderStatusHistoryEntity[2]" xsi:type="ns1:salesOrderStatusHistoryEntityArray">
+					<item xsi:type="ns1:salesOrderStatusHistoryEntity">
+						<parent_id xsi:type="xsd:string">3</parent_id>
+						<created_at xsi:type="xsd:string">2013-07-17 20:06:49</created_at>
+						<is_customer_notified xsi:type="xsd:string">1</is_customer_notified>
+						<status xsi:type="xsd:string">processing</status>
+					</item>
+					<item xsi:type="ns1:salesOrderStatusHistoryEntity">
+						<parent_id xsi:type="xsd:string">3</parent_id>
+						<created_at xsi:type="xsd:string">2013-06-27 16:01:41</created_at>
+						<is_customer_notified xsi:type="xsd:string">1</is_customer_notified>
+						<status xsi:type="xsd:string">pending</status>
+					</item>
+				</status_history>
+			</result>
+		</ns1:salesOrderInfoResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

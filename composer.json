@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/Shipjunction_Util",
+    "type": "magento-module",
+    "license": "Massachusetts-Institute-of-Technology-License-(MITL)",
+    "homepage": "",
+    "description": "Shipjunction Utilities enables tight integration between the Magento and Shipjunction platforms",
+    "authors": [
+    {
+        "name": " ShipJunction",
+        "email": "dev@shipjunction.com"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}

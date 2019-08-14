@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<config>
+    <api>
+        <resources>
+            <shipjunction_utilities translate="title" module="shipjunction_utilities">
+            <title>Shipjunction Utilites</title>
+            <model>Shipjunction_Utilities_Model_Objectmodel_Api</model>
+            <methods>
+                <sendShipmentEmail translate="title" module="shipjunction_utilities">
+                    <title>Send Shipment Email</title>
+                    <method>sendShipmentEmail</method>
+                </sendShipmentEmail>
+                <getClearpathOrderNumber translate="title" module="shipjunction_utilities">
+                    <title>Get ClearPath Order Number</title>
+                    <method>getClearpathOrderNumber</method>
+                </getClearpathOrderNumber>
+                <getEmbeddedErpFullStockOrders translate="title" module="shipjunction_utilities">
+                    <title>Get Embedded Erp Orders which are fully stocked</title>
+                    <method>getEmbeddedErpFullStockOrders</method>
+                </getEmbeddedErpFullStockOrders>
+                <getEmbeddedErpZonesAndBins translate="title" module="shipjunction_utilities">
+                    <title>Get Embedded Erp zones and bins for a list of productIds</title>
+                    <method>getEmbeddedErpZonesAndBins</method>
+                </getEmbeddedErpZonesAndBins>
+                <createInvoice translate="title" module="shipjunction_utilities">
+                    <title>Create Invoice</title>
+                    <method>createInvoice</method>
+                </createInvoice>
+            </methods>
+            </shipjunction_utilities>
+        </resources>
+        <resources_alias>
+            <shipjunctionUtilities>shipjunction_utilities</shipjunctionUtilities>
+        </resources_alias>
+        <v2>
+            <resources_function_prefix>
+                <shipjunctionUtilities>shipjunctionUtilities</shipjunctionUtilities>
+            </resources_function_prefix>
+        </v2>
+    </api>
+</config>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<config>
+    <tabs>
+        <shipjunction translate="label">
+            <label>Shipjunction</label>
+            <sort_order>150</sort_order>
+        </shipjunction>
+    </tabs>
+    <sections>
+        <clearpath translate="label" module="adminhtml">
+            <label>Clearpath</label>
+            <tab>shipjunction</tab>
+            <sort_order>10</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general translate="label">
+                    <label>General</label>
+                    <sort_order>50</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <clearpath_tablename translate="label">
+                            <label>Clearpath table name</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </clearpath_tablename>
+					</fields>
+				</general>
+			</groups>
+		</clearpath>
+	</sections>
+</config>
