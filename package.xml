@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
     <name>Shipjunction_Util</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <stability>stable</stability>
     <license>Massachusetts Institute of Technology License (MITL)</license>
     <channel>community</channel>
@@ -11,8 +11,8 @@
     <notes>For more information contact us at info@shipjunction.com</notes>
     <authors><author><name>ShipJunction</name><user>shipjunction</user><email>dev@shipjunction.com</email></author></authors>
     <date>2014-12-09</date>
-    <time>21:00:17</time>
-    <contents><target name="magelocal"><dir name="Shipjunction"><dir name="Utilities"><dir name="Model"><dir name="Objectmodel"><dir name="Api"><file name="V2.php" hash="c72849bd552b06b397854eb0327cab1a"/></dir><file name="Api.php" hash="bf49cf010489f2801d65184af742627f"/></dir></dir><dir name="etc"><file name="adminhtml.xml" hash="8bd8b8559228898482f0350c88abbf2c"/><file name="api.xml" hash="e06219c93f542e947a5aef6216962ad1"/><file name="config.xml" hash="61dbf18db5f93e7c2f0d233db70d0cfa"/><file name="system.xml" hash="9a1e37f245ae223621bdaede1ac2e329"/><file name="wsdl.xml" hash="a030c34a59a1c5e25502f0b947b168b8"/></dir></dir></dir></target></contents>
+    <time>22:52:46</time>
+    <contents><target name="magelocal"><dir name="Shipjunction"><dir name="Utilities"><dir name="Model"><dir name="Objectmodel"><dir name="Api"><file name="V2.php" hash="c72849bd552b06b397854eb0327cab1a"/></dir><file name="Api.php" hash="bf49cf010489f2801d65184af742627f"/></dir></dir><dir name="etc"><file name="adminhtml.xml" hash="8bd8b8559228898482f0350c88abbf2c"/><file name="api.xml" hash="e06219c93f542e947a5aef6216962ad1"/><file name="config.xml" hash="7a9465f4a3f25c3e9363d716fdac622a"/><file name="system.xml" hash="9a1e37f245ae223621bdaede1ac2e329"/><file name="wsdl.xml" hash="a030c34a59a1c5e25502f0b947b168b8"/></dir></dir></dir></target></contents>
     <compatible/>
     <dependencies><required><php><min>5.0.0</min><max>6.0.0</max></php></required></dependencies>
 </package>

@@ -2,16 +2,14 @@
 <config>
     <modules>
         <Shipjunction_Utilities>
-            <version>0.1.0</version>
+            <version>1.0.2</version>
         </Shipjunction_Utilities>
     </modules>
     <global>
         <models>
             <shipjunction_utilities>
-<!--            <modulename>-->
                 <class>Shipjunction_Utilities_Model</class>
             </shipjunction_utilities>
-<!--            </modulename>-->
         </models>
     </global>
 	<default>
