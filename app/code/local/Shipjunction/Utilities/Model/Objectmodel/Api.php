@@ -243,7 +243,7 @@ class Shipjunction_Utilities_Model_Objectmodel_Api extends Mage_Api_Model_Resour
         }
 
         /* @var $shipment Mage_Sales_Model_Order_Shipment */
-        $shipment = $order->prepareShipment($itemsQty);
+        $shipment = $order->prepareShipment();  // removing $itemsQty for now
         if ($shipment) {
             $shipment->register();
             //$shipment->addComment($comment, $email && $includeComment);
